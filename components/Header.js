@@ -11,7 +11,6 @@ export default function Header() {
               layout="fill"
               objectFit='contain'
               objectPosition='left'
-
               />
             </div>
 
