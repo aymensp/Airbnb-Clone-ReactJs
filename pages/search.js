@@ -1,17 +1,18 @@
 import { useRouter } from "next/dist/client/router";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import {format} from "date-fns"
+import { format } from "date-fns"
+import InfoCard from "../components/InfoCard";
 
-function Search() {
+function Search({searchResults}) {
     const router = useRouter();
-const {location , startDate , endDate , numberOfGuests} = router.query;
+    const { location, startDate, endDate, numberOfGuests } = router.query;
     const formattesStartDate = format(new Date(startDate), 'dd MMMM yy')
     const formattesEndDate = format(new Date(endDate), 'dd MMMM yy')
     const range = `${formattesStartDate} - ${formattesEndDate}`
     return (
         <div>
-            <Header />
+            <Header placeholder={`${location} | ${range} | ${numberOfGuests} guests`} />
             <main className='flex'>
                 <section className='flex-grow pt-14 px-6'>
                     <p className='text-xs '>300 + Stays -{range}  for {numberOfGuests} guets</p>
@@ -34,6 +35,21 @@ const {location , startDate , endDate , numberOfGuests} = router.query;
                             More filters
                         </p>
                     </div>
+                    <div className='flex flex-col'>
+                    {searchResults.map(item=>(
+                        <InfoCard 
+                        key={item.img}
+                        title={item.title}
+                        img={item.img}
+                        location={item.location}
+                        description={item.description}
+                        star={item.star}
+                        price={item.price}
+                        total={item.total}
+                        />
+                    ))}
+                    </div>
+                   
                 </section>
             </main>
             <Footer />
@@ -42,3 +58,16 @@ const {location , startDate , endDate , numberOfGuests} = router.query;
 }
 
 export default Search
+
+export async function getServerSideProps(context) {
+    const searchResults = await fetch('https://links.papareact.com/isz').
+        then(
+            res => res.json()
+        );
+
+    return {
+        props: {
+            searchResults,
+        }
+    }
+}
